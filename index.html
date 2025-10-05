@@ -1,118 +1,144 @@
-import React, { useState } von "react"; import { Card, CardContent } von "@/components/ui/card"; import { Button } von "@/components/ui/button"; import { Eingabe } von "@/components/ui/input"; import { motion, AnimatePresence } aus "framer-motion"; import { Trash2, PlusCircle, Rocket } von »lucide-react«;
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Intervall Timer - Testdatei</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#064e3b;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center}
+    .card{background:#0b3b2d;border:1px solid #1f6b53;border-radius:20px;padding:20px;max-width:420px;width:92%}
+    h1{margin:0 0 16px;font-size:28px;text-align:center}
+    .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+    button{cursor:pointer;border:0;border-radius:12px;padding:10px 14px;background:#059669;color:#fff;font-weight:600}
+    button:disabled{opacity:.5;cursor:default}
+    .ghost{background:#6b7280}
+    .warn{background:#ca8a04}
+    .box{background:#052e24;border-radius:14px;padding:14px;margin:10px 0;text-align:center}
+    .big{font:700 54px/1 monospace}
+    .bar{height:8px;background:#1f2937;border-radius:999px;overflow:hidden;margin:14px 0}
+    .bar>div{height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#10b981)}
+    .lbl{font-size:13px;color:#c7d2fe;opacity:.9}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Intervall Timer</h1>
 
-const GLAUBENSSAETZE_KATEGORIEN = { "Network-Marketing": { Areal: "Kommunikation & Beziehungspflege", negativ: [ "Ich wirke aufdringlich", "Niemand interessiert sich für mein Business", "Ich bin nicht überzeugend genug" ], positiv: [ "Ich inspiriere Menschen durch mein Vorbild", "Mein Business zieht die richtigen Partner an", "Ich kommuniziere klar, wertschätzend und erfolgreich" ] }, "Organe & Emotionen": { Fläche: "Vegetatives Nervensystem / Körperresonanz", negativ: [ "Ich kann meinen Körper nicht fühlen", "Meine Organe sind geschwächt", "Emotionen blockieren meinen Energiefluss" ], positiv: [ "Ich bin verbunden mit meinem inneren Erleben", "Meine Organe arbeiten im Einklang", "Ich fühle und löse, was in mir ist" ] }, "Business & Erfolg": { areal: "Ziel- und Handlungssystem / Planung", negativ: [ "Ich weiß nicht, wo ich anfangen soll", "Ich bin nicht gut genug für Erfolg", "Ich verliere schnell die Motivation" ], positiv: [ "Ich handle klar und zielgerichtet", "Ich verdiene Erfolg und lebe ihn", "Ich bringe meine Vision in die Welt" ] }, "Spiritualität": { Areal: "Pinealdrüse / Höheres Selbst", negativ: [ "Ich bin vom Universum getrennt", "Ich spüre meine innere Führung nicht", "Ich zweifle an meinem spirituellen Weg" ], positiv: [ "Ich bin verbunden mit dem Göttlichen in mir", "Ich empfange Klarheit und Impulse", "Ich folge meiner Intuition und inneren Wahrheit" ] }, "Beziehungen": { Areal: "Limbisches System / Verbindung", negativ: [ "Ich werde nicht verstanden", "Ich geräte immer an die falschen Menschen", "Ich darf keine Nähe zulassen" ], positiv: [ "Ich erlaube mir tiefe und nährende Verbindungen", "Ich werde gesehen und geschätzt, so wie ich bin", "Ich bin offen für liebevolle Beziehungen" ] }, "Geld & Fülle": { Areal: "Überlebenszentrum / Wertsystem", negativ: [ "Ich habe nie genug Geld", "Geld ist schwer zu bekommen", "Ich habe Angst vor Mangel" ], positiv: [ "Ich öffne mich für Fülle in allen Lebensbereichen", "Geld fließt leicht und liebevoll in mein Leben", "Ich bin ein Magnet für Reichtum und Wertschätzung" ] }, "Meridiane": { Areal: "Energetisches Netzwerk / Ausgleich", negativ: [ "Meine Energie ist blockiert", "Ich fühle mich unausgeglichen", "Ich bin ständig erschöpft" ], positiv: [ "Meine Meridiane sind im Fluss", "Ich spüre harmonische Energie in meinem Körper", "Mein Energiesystem ist lebendig und klar" ] }, "Chakren": { Areal: "Energetische Zentren / Bewusstseinsebenen", negativ: [ "Meine Chakren sind blockiert", "Ich fühle mich zerrissen", "Ich bin nicht in meiner Mitte" ], positiv: [ "Meine Chakren sind offen und ausbalanciert", "Ich bin verbunden mit allen Ebenen meines Seins", "Ich lebe in Einklang mit meiner inneren Wahrheit" ] }, "Abnehmen": { Areal: "Hypothalamus / Stoffwechselzentrum", negativ: [ "Ich nehme einfach nicht ab", "Essen kontrolliert mein Leben", "Mein Körper speichert alles als Fett" ], positiv: [ "Ich nehme leicht und natürlich ab", "Ich esse achtsam und liebevoll", "Mein Körper findet sein Wohlfühlgewicht mit Leichtigkeit" ] }, "Vermarktung": { Areal: "Kommunikationszentrum / Ausdruck", negativ: [ "Ich kann mein Angebot nicht klar kommunizieren", "Ich wirke nicht professionell genug", "Marketing fühlt sich für mich manipulativ an" ], positiv: [ "Ich kommuniziere klar und mit Herz", "Mein Marketing ist authentisch und wirkungsvoll", "Ich erreiche genau die Menschen, die ich anziehen möchte" ] }, "Kundensog": { Areal: "Magnetisches Feld / Ausstrahlung", negativ: [ "Ich muss Kunden hinterherlaufen", "Niemand interessiert sich für mein Angebot", "Ich bin unsichtbar am Markt" ], positiv: [ "Ich ziehe genau die richtigen Kunden an", "Meine Energie wirkt magnetisch", "Kunden finden mich mit Leichtigkeit" ] }, "Content-Magie": { Areal: "Kreativzentrum / Ausdruckskraft", negativ: [ "Ich weiß nicht, was ich posten soll", "Niemand interessiert sich für meine Inhalte", "Ich bin nicht kreativ genug" ], positiv: [ "Meine Inhalte sind inspirierend und kraftvoll", "Ich bringe meine Botschaft auf magische Weise in die Welt", "Meine Kreativität fließt leicht und begeistert meine Community" ] }, "Bestellung beim Universum": { Areal: "Kreative Schöpfungszentrale", negativ: [ "Ich weiß nicht, was ich will", "Ich bin mir meines Wertes nicht sicher", "Ich glaube nicht daran, dass meine Bestellung ankommt" ], positiv: [ "Ich bestelle klar und mit Freude beim Universum", "Ich bin ein kraftvoller Schöpfer meiner Realität", "Meine Wünsche sind willkommen und dürfen erfüllt werden" ] }, "Zellen & Reinigung": { Areal: "Zellbewusstsein / Erneuerung", negativ: [ "Meine Zellen sind überlastet und träge", "Ich trage alte Zellinformationen mit mir", "Mein Körper fühlt sich verschlackt und blockiert an" ], positiv: [ "Meine Zellen erneuern sich in Licht und Klarheit", "Ich befreie mich auf Zellebene von alten Informationen", "Meine Zellen sind gereinigt, vital und lebendig" ] }, "Selbstbewusstsein": { Areal: "Frontallappen", negativ: [ "Ich traue mich nicht, sichtbar zu sein", "Ich habe Angst vor Ablehnung", "Ich bin nicht überzeugend genug" ], positiv: [ "Ich stehe zu mir und zeige mich", "Ich vertraue meiner Ausstrahlung", "Ich bin selbstbewusst und klar" ] }, "Gesundheit": { Fläche: "Hypothalamus", negativ: [ "Ich bin krank", "Mein Körper ist schwach", "Ich werde nie ganz gesund" ], positiv: [ "Ich bin gesund und voller Energie", "Mein Körper regeneriert sich täglich", "Ich vertraue auf meine Selbstheilungskräfte" ] } };
+    <div class="box">
+      <div class="lbl">Timer-Dauer einstellen</div>
+      <div class="row">
+        <button class="preset" data-min="1">1 Min</button>
+        <button class="preset" data-min="3">3 Min</button>
+        <button class="preset" data-min="6">6 Min</button>
+        <button class="preset" data-min="10">10 Min</button>
+        <button class="preset" data-min="15">15 Min</button>
+      </div>
+      <div class="row">
+        <span class="lbl">Eigene Zeit:</span>
+        <input id="customMin" type="number" min="1" max="60" value="6" style="width:64px;text-align:center;border-radius:10px;border:1px solid #334155;padding:8px;background:#021b15;color:#fff">
+        <span class="lbl">Min</span>
+        <button id="setBtn" class="warn">Setzen</button>
+      </div>
+    </div>
 
-const TIPPS = { "Network Marketing": " 🌐 Tipp: Sei das, was du suchst – Menschen folgen authentischer Energie.", "Organe & Emotionen": " ❤️ Tipp: Lausche deinem Körper – er spricht über Gefühle.", "Business & Erfolg": " 🚀 Tipp: Dein Erfolg beginnt in deinem Denken – und in deinem Herzen.", "Spiritualität": " 🌌 Tipp: Deine innere Verbindung bringt äußeren Frieden.", "Beziehungen": " 🤝 Tipp: Verbindung beginnt mit der Beziehung zu dir selbst.", "Gesundheit": " 🧬 Tipp: Heilung beginnt mit Vertrauen in deinen Körper.", "Selbstbewusstsein": " 💪 Tipp: Deine Kraft liegt darin, du selbst zu sein.", "Geld & Fülle": " 💰 Tipp: Geld folgt deiner Wertschätzung – nicht deinem Zweifel.", "Meridiane": " 🌀 Tipp: Energie folgt der Aufmerksamkeit – bring sie in Fluss.", "Chakren": " 🧘 Tipp: Jedes Chakra ist ein Tor zu deiner inneren Harmonie.", "Abnehmen": " 🥦 Tipp: Iss mit Freude und Dankbarkeit – dein Körper hört zu.", "Marketing": " 📣 Tipp: Sprich wie ein Mensch, nicht wie ein Marktschreier.", "Kundensog": " 🧲 Tipp: Werde zur Energie, die du anziehen willst.", "Content-Magie": " 🪄 Tipp: Deine Worte sind Magie – teile, was dich berührt.", "Bestellung beim Universum": " 🌠 Tipp: Klarheit + Vertrauen = Empfangsmodus." };
+    <div class="box">
+      <div id="time" class="big">06:00</div>
+      <div id="status">Bereit zum Start</div>
+    </div>
 
-const ALLE_KATEGORIEN = Objekt.Schlüssel(GLAUBENSSAETZE_KATEGORIEN);
+    <div class="box">
+      <div class="lbl">Signale gegeben</div>
+      <div id="count" style="font-size:28px;font-weight:700;color:#34d399">0</div>
+    </div>
 
-Funktion getRandomItem(Array) { return array[Math.floor(Math.random() * array.length)]; }
+    <div class="bar"><div id="prog"></div></div>
 
-export Standardfunktion SynapsenApp() { const [arealProzent, setArealProzent] = useState(0); const [explosionAktiv, setExplosionAktiv] = useState(falsch); const [aktiveKategorie, setAktiveKategorie] = useState(null); const [positiv, setPositive] = useState(""); const [Tipp, setTipp] = useState(""); const [negativ, setNegative] = useState("");
+    <div class="row">
+      <button id="start">Start</button>
+      <button id="pause" class="warn" disabled>Pause</button>
+      <button id="reset" class="ghost">Reset</button>
+    </div>
 
-const handleNeueKategorie = () => { const kategorie = getRandomItem(ALLE_KATEGORIEN); setAktiveKategorie(kategorie); const daten = GLAUBENSSAETZE_KATEGORIEN[kategorie]; setPositive(getRandomItem(daten.positiv)); setNegative(getRandomItem(daten.negativ)); setArealProzent(Math.floor(Math.random() * 100)); setTipp(TIPPS[kategorie] || ""); };
-
-return (
-
-🧠 Synapsen App
-<motion.h2 initial={{ Deckkraft: 0, y: -10 }} animate={{ Deckkraft: 1, y: 0 }} transition={{ Dauer: 0.8 }} className="text-xl text-gray-700 border-l-4 border-yellow-400 pl-4 py-1 bg-yellow-50 rounded shadow-sm"> ✨ Aktiviere deine Schöpferkraft – Erschaffe dich NEU </motion.h2> <Schaltfläche onClick={() => { const kategorie = getRandomItem(ALLE_KATEGORIEN); setAktiveKategorie(kategorie); const daten = GLAUBENSSAETZE_KATEGORIEN[kategorie]; setPositive(getRandomItem(daten.positiv)); setNegative(getRandomItem(daten.negativ)); setArealProzent(Math.floor(Math.random() * 100)); }} className="bg-blue-500 text-weiß px-4 py-2 rounded-md shadow hover:bg-blue-600" > 🎲 Zufällige Kategorie wählen <auswählen onChange={(e) => { const kategorie = e.target.value; setAktiveKategorie(kategorie); const daten = GLAUBENSSAETZE_KATEGORIEN[kategorie]; setPositive(getRandomItem(daten.positiv)); setNegative(getRandomItem(daten.negativ)); setArealProzent(Math.floor(Math.random() * 100)); }} className="px-3 py-2 Rahmen gerundet-md Schatten text-sm" > Kategorie wählen... {ALLE_KATEGORIEN.map((kat) => ( {kat} ))}
+    <div style="text-align:center;margin-top:10px">
+      <div class="lbl">Nächstes Signal in:</div>
+      <div id="next" style="font-size:20px;font-weight:700">20s</div>
+    </div>
   </div>
 
-  {aktiveKategorie && (
-    <Card className="p-4">
-      <CardContent>
-        <h2 className="text-xl font-bold mb-2">{aktiveKategorie}</h2>
-        <p className="text-sm text-gray-600 mb-2">
-          Gehirnareal: <strong>{GLAUBENSSAETZE_KATEGORIEN[aktiveKategorie].areal}</strong>
-        </p>
-        <div className="text-red-700 mb-1">
-          <strong>Negativ:</strong> {negative}
-          <Button
-            onClick={() => setNegative("")}
-            className="ml-2 text-xs bg-red-100 text-red-800 hover:bg-red-200 px-2 py-1 rounded"
-          >
-            🗑️ Dysfunktionale Synapse löschen
-          </Button>
-        </div>
-        <p className="text-green-700 mb-1">
-          <strong>Positiv:</strong> {positive}
-        </p>
-        <p className="text-sm text-blue-700 mb-2">Aktivierung: <strong>{arealProzent}%</strong></p>
-        {tipp && (
-          <p className="text-sm text-amber-700 mb-2">{tipp}</p>
-        )}
-        
-        <Button
-          onClick={() => setArealProzent(100)}
-          className="mt-2 w-full bg-blue-100 text-blue-800 hover:bg-blue-200"
-        >
-          Aktivierung auf 100 % setzen
-        </Button>
-
-        <Button
-          onClick={() => {
-            const neueExplosionStatus = !explosionAktiv;
-            setExplosionAktiv(neueExplosionStatus);
-            if (!explosionAktiv) {
-              const sound = new Audio("/sounds/glitter.mp3");
-              sound.play();
-            }
-          }}
-          className="mt-2 w-full bg-yellow-300 text-yellow-900 px-6 py-2 rounded-full shadow font-bold hover:bg-yellow-400"
-        >
-          ✨ Schöpferkraft aktivieren
-        </Button>
-      </CardContent>
-    </Card>
-  )}
-
-  <AnimatePresence>
-    {explosionAktiv && (
-      <motion.div
-        className="absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1.5, opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="relative w-40 h-40">
-          <div className="absolute inset-0 rounded-full bg-yellow-400 shadow-2xl border-4 border-yellow-300 animate-ping" />
-          {[...Array(30)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 rounded-full"
-              style={{
-                backgroundColor: `hsl(${Math.random() * 360}, 100%, 70%)`,
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)'
-              }}
-              initial={{ opacity: 1, x: 0, y: 0 }}
-              animate={{
-                x: Math.cos((i / 30) * 2 * Math.PI) * 100,
-                y: Math.sin((i / 30) * 2 * Math.PI) * 100,
-                opacity: 0
-              }}
-              transition={{ duration: 1.5, delay: 0.2 }}
-            />
-          ))}
-        </div>
-      </motion.div>
-    )}
-
-    {explosionAktiv && (
-      <motion.div
-        className="absolute left-1/2 top-[65%] -translate-x-1/2 mt-4 text-yellow-600 text-2xl font-bold"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1.2, opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        🌀 Neue Synapse verknüpft
-        <div className="text-sm text-center text-yellow-800 mt-2">Dein neuronales Netzwerk wächst.</div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-</div>
-
-
+  <script>
+    class IntervalTimer {
+      constructor(){
+        this.total=6*60; this.signal=20;
+        this.left=this.total; this.toSignal=this.signal;
+        this.count=0; this.run=false; this.t=null;
+        this.$=id=>document.getElementById(id);
+        this.time=this.$('time'); this.status=this.$('status');
+        this.countEl=this.$('count'); this.prog=this.$('prog'); this.next=this.$('next');
+        this.startBtn=this.$('start'); this.pauseBtn=this.$('pause'); this.resetBtn=this.$('reset');
+        this.custom=document.getElementById('customMin'); this.setBtn=this.$('setBtn');
+        document.querySelectorAll('.preset').forEach(b=>b.onclick=()=>this.setDuration(+b.dataset.min));
+        this.setBtn.onclick=()=>this.setDuration(+this.custom.value);
+        this.startBtn.onclick=()=>this.start(); this.pauseBtn.onclick=()=>this.pause(); this.resetBtn.onclick=()=>this.reset();
+        this.draw();
+      }
+      setDuration(min){ if(this.run) return;
+        this.total=min*60; this.left=this.total; this.toSignal=this.signal; this.count=0;
+        this.status.textContent='Bereit zum Start'; this.draw();
+      }
+      start(){ if(this.run) return; this.run=true;
+        this.status.textContent='Timer läuft...'; this.startBtn.disabled=true; this.pauseBtn.disabled=false;
+        this.t=setInterval(()=>this.tick(),1000);
+      }
+      pause(){ if(!this.run) return; this.run=false; clearInterval(this.t);
+        this.status.textContent='Pausiert'; this.startBtn.disabled=false; this.pauseBtn.disabled=true;
+      }
+      reset(){ this.run=false; clearInterval(this.t); this.left=this.total; this.toSignal=this.signal; this.count=0;
+        this.status.textContent='Zurückgesetzt'; this.startBtn.disabled=false; this.pauseBtn.disabled=true; this.draw();
+      }
+      tick(){
+        this.left--; this.toSignal--;
+        if(this.toSignal<=0){ this.beep(); this.count++; this.toSignal=this.signal; this.countEl.textContent=this.count; }
+        if(this.left<=0){ this.finish(); return; }
+        this.draw();
+      }
+      finish(){ this.run=false; clearInterval(this.t); this.left=0; this.toSignal=0;
+        this.status.textContent='Timer beendet!'; this.startBtn.disabled=true; this.pauseBtn.disabled=true; this.draw(); this.jingle();
+      }
+      draw(){
+        const m=Math.floor(this.left/60).toString().padStart(2,'0');
+        const s=(this.left%60).toString().padStart(2,'0');
+        this.time.textContent=`${m}:${s}`;
+        const p=((this.total-this.left)/this.total)*100; this.prog.style.width=p+'%';
+        this.next.textContent=(this.toSignal>0?this.toSignal:0)+'s';
+      }
+      beep(){
+        try{
+          const ac=new (window.AudioContext||window.webkitAudioContext)();
+          const o=ac.createOscillator(), g=ac.createGain();
+          o.connect(g); g.connect(ac.destination);
+          o.frequency.value=800; o.type='sine';
+          g.gain.setValueAtTime(0.25, ac.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.01, ac.currentTime+0.25);
+          o.start(); o.stop(ac.currentTime+0.25);
+          if(navigator.vibrate) navigator.vibrate(60);
+        }catch{}
+      }
+      jingle(){
+        try{
+          const ac=new (window.AudioContext||window.webkitAudioContext)();
+          [523.25,659.25,783.99,1046.5].forEach((f,i)=>{
+            const o=ac.createOscillator(), g=ac.createGain();
+            o.connect(g); g.connect(ac.destination); o.frequency.value=f; o.type='sine';
+            const t=ac.currentTime+i*0.28; g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.35, t+0.05);
+            g.gain.exponentialRampToValueAtTime(0.01, t+0.25);
+            o.start(t); o.stop(t+0.3);
+          });
+        }catch{}
+      }
+    }
+    document.addEventListener('DOMContentLoaded',()=>new IntervalTimer());
+  </script>
+</body>
+</html>
